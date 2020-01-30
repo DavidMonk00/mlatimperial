@@ -22,17 +22,17 @@ DATA_PATH = "data/week-one/"
 
 models = {
     "Ridge": Ridge(),
-    "LinearRegression": LinearRegression(),
+    # "LinearRegression": LinearRegression(),
     "Lasso": Lasso(),
     "ElasticNet": ElasticNet(),
     "BayesianRidge": BayesianRidge(),
     # "ARDRegression": ARDRegression(),
     "SVR": SVR(),
     "NuSVR": NuSVR(),
-    "KernelRidge": KernelRidge(),
-    "GaussianProcessRegressor": GaussianProcessRegressor(),
+    # "KernelRidge": KernelRidge(),
+    # "GaussianProcessRegressor": GaussianProcessRegressor(),
     "DecisionTreeRegressor": DecisionTreeRegressor(),
-    "MLPRegressor": MLPRegressor(),
+    # "MLPRegressor": MLPRegressor(),
     "PassiveAggressiveRegressor": PassiveAggressiveRegressor()
 }
 
