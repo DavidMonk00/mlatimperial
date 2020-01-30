@@ -14,6 +14,8 @@ from sklearn.tree import DecisionTreeRegressor
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import GridSearchCV
+from sklearn.pipeline import make_pipeline
+from sklearn.decomposition import PCA
 
 from utils.pipeline import Pipeline
 
@@ -50,6 +52,7 @@ class HousingPipeline(Pipeline):
             parse_dates=['timestamp'])
 
     def preprocess(self):
+        self.setTarget("price_doc")
         self.data.drop(['id', 'price_doc'], axis=1, inplace=True)
         self.X = pd.merge_ordered(
             self.data.copy(), self.macro.copy(), on='timestamp', how='left')
@@ -59,10 +62,9 @@ class HousingPipeline(Pipeline):
         self.X = self.X.select_dtypes(exclude=['object'])
         self.X.drop(columns=["timestamp"], inplace=True)
 
-        # Scale data
-        self.scaler = StandardScaler()
-        self.features = self.X.copy().columns
-        self.X = self.scaler.fit_transform(self.X)
+    def construct(self, *args):
+        self.pipeline = make_pipeline(*args)
+        print(self.pipeline)
 
     def train(self, model):
         super().train(model)
@@ -102,17 +104,28 @@ def main():
 
     print(hp.data.shape, hp.test.shape, hp.macro.shape)
 
-    hp.setTarget("price_doc")
     hp.preprocess()
-    results = {}
-    for model in models:
-        print(model)
-        results[model] = hp.train(models[model])
-    # uploadToKaggle(hp.predict())
-    # print(models)
-    print(pd.DataFrame(
-        list(results.items()), columns=["model", "error"],
-        index=np.arange(len(results))))
+    hp.construct(StandardScaler(), PCA(), Ridge())
+    param_grid = {
+        "pca__n_components": np.logspace(0, 2, 20, dtype=np.int64)
+    }
+    gscv = GridSearchCV(
+        hp.pipeline, param_grid, n_jobs=-1,
+        scoring='neg_root_mean_squared_error', verbose=1
+    )
+    gscv.fit(hp.X, np.log1p(hp.Y))
+    print(gscv.cv_results_.keys())
+    print(gscv.cv_results_['mean_test_score'])
+    # print(gscv)
+    # results = {}
+    # for model in models:
+    #     print(model)
+    #     results[model] = hp.train(models[model])
+    # # uploadToKaggle(hp.predict())
+    # # print(models)
+    # print(pd.DataFrame(
+    #     list(results.items()), columns=["model", "error"],
+    #     index=np.arange(len(results))))
 
 
 if __name__ == '__main__':
