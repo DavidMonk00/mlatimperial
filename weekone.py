@@ -7,6 +7,7 @@ import os
 from matplotlib import pyplot as plt
 from sklearn.linear_model import LinearRegression, Ridge, Lasso, ElasticNet
 from sklearn.linear_model import BayesianRidge, ARDRegression
+from sklearn.linear_model import PassiveAggressiveRegressor
 from sklearn.svm import SVR, NuSVR
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.tree import DecisionTreeRegressor
@@ -32,6 +33,7 @@ models = {
     "GaussianProcessRegressor": GaussianProcessRegressor(),
     "DecisionTreeRegressor": DecisionTreeRegressor(),
     "MLPRegressor": MLPRegressor(),
+    "PassiveAggressiveRegressor": PassiveAggressiveRegressor()
 }
 
 
