@@ -103,7 +103,7 @@ class HousingPipeline(Pipeline):
     def search(self, param_grid):
         gscv = GridSearchCV(
             self.pipeline, param_grid, n_jobs=-1,
-            scoring='neg_root_mean_squared_error', verbose=2, cv=5,
+            scoring='neg_root_mean_squared_error', verbose=1, cv=5,
             refit='best_index_'
         )
         gscv.fit(self.X, np.log1p(self.Y))
