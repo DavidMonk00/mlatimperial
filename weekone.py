@@ -23,33 +23,33 @@ from utils.pipeline import Pipeline
 DATA_PATH = "data/week-one/"
 
 models = {
-    # "ridge": {
-    #     'model': Ridge(),
-    #     'param_grid': {
-    #         'ridge__alpha': np.logspace(-3, 4, 5)
-    #     }
-    # },
-    # # "LinearRegression": LinearRegression(),
-    # "lasso": {
-    #     'model': Lasso(),
-    #     'param_grid': {
-    #         'lasso__alpha': np.logspace(-3, 4, 5)
-    #     }
-    # },
-    # "elasticnet": {
-    #     'model': ElasticNet(),
-    #     'param_grid': {
-    #         'elasticnet__alpha': np.logspace(-3, 4, 5)
-    #     }
-    # },
-    # "BayesianRidge": BayesianRidge(),
-    # # "ARDRegression": ARDRegression(),
-    "svr": {
-        'model': SVR(),
+    "ridge": {
+        'model': Ridge(),
         'param_grid': {
-            'svr__C': np.logspace(-3, 3, 10)
+            'ridge__alpha': np.logspace(-4, 4, 20)
         }
     },
+    # "LinearRegression": LinearRegression(),
+    "lasso": {
+        'model': Lasso(),
+        'param_grid': {
+            'lasso__alpha': np.logspace(-4, 4, 20)
+        }
+    },
+    "elasticnet": {
+        'model': ElasticNet(),
+        'param_grid': {
+            'elasticnet__alpha': np.logspace(-4, 4, 20)
+        }
+    },
+    # "BayesianRidge": BayesianRidge(),
+    # # "ARDRegression": ARDRegression(),
+    # "svr": {
+    #     'model': SVR(),
+    #     'param_grid': {
+    #         'svr__C': np.logspace(-3, 3, 10)
+    #     }
+    # },
     # "NuSVR": NuSVR(),
     # # "KernelRidge": KernelRidge(),
     # # "GaussianProcessRegressor": GaussianProcessRegressor(),
@@ -103,7 +103,7 @@ class HousingPipeline(Pipeline):
     def search(self, param_grid):
         gscv = GridSearchCV(
             self.pipeline, param_grid, n_jobs=-1,
-            scoring='neg_root_mean_squared_error', verbose=1, cv=5,
+            scoring='neg_root_mean_squared_error', verbose=2, cv=5,
             refit='best_index_'
         )
         gscv.fit(self.X, np.log1p(self.Y))
