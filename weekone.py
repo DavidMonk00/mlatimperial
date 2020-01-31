@@ -23,24 +23,39 @@ from utils.pipeline import Pipeline
 DATA_PATH = "data/week-one/"
 
 models = {
-    "ridge": {
-        'model': Ridge(),
+    # "ridge": {
+    #     'model': Ridge(),
+    #     'param_grid': {
+    #         'ridge__alpha': np.logspace(-3, 4, 5)
+    #     }
+    # },
+    # # "LinearRegression": LinearRegression(),
+    # "lasso": {
+    #     'model': Lasso(),
+    #     'param_grid': {
+    #         'lasso__alpha': np.logspace(-3, 4, 5)
+    #     }
+    # },
+    # "elasticnet": {
+    #     'model': ElasticNet(),
+    #     'param_grid': {
+    #         'elasticnet__alpha': np.logspace(-3, 4, 5)
+    #     }
+    # },
+    # "BayesianRidge": BayesianRidge(),
+    # # "ARDRegression": ARDRegression(),
+    "svr": {
+        'model': SVR(),
         'param_grid': {
-            'ridge__alpha': np.logspace(-3, 3, 10)
+            'svr__C': np.logspace(-3, 3, 10)
         }
     },
-    # "LinearRegression": LinearRegression(),
-    "Lasso": Lasso(),
-    "ElasticNet": ElasticNet(),
-    "BayesianRidge": BayesianRidge(),
-    # "ARDRegression": ARDRegression(),
-    "SVR": SVR(),
-    "NuSVR": NuSVR(),
-    # "KernelRidge": KernelRidge(),
-    # "GaussianProcessRegressor": GaussianProcessRegressor(),
-    "DecisionTreeRegressor": DecisionTreeRegressor(),
-    # "MLPRegressor": MLPRegressor(),
-    "PassiveAggressiveRegressor": PassiveAggressiveRegressor()
+    # "NuSVR": NuSVR(),
+    # # "KernelRidge": KernelRidge(),
+    # # "GaussianProcessRegressor": GaussianProcessRegressor(),
+    # "DecisionTreeRegressor": DecisionTreeRegressor(),
+    # # "MLPRegressor": MLPRegressor(),
+    # "PassiveAggressiveRegressor": PassiveAggressiveRegressor()
 }
 
 
@@ -88,12 +103,11 @@ class HousingPipeline(Pipeline):
     def search(self, param_grid):
         gscv = GridSearchCV(
             self.pipeline, param_grid, n_jobs=-1,
-            scoring='neg_root_mean_squared_error', verbose=1, cv=3,
+            scoring='neg_root_mean_squared_error', verbose=1, cv=5,
             refit='best_index_'
         )
         gscv.fit(self.X, np.log1p(self.Y))
-        print(gscv.cv_results_.keys())
-        print(gscv.cv_results_['mean_test_score'])
+        print(pd.DataFrame(gscv.cv_results_))
         print(gscv.best_estimator_)
         print(gscv.best_score_)
 
@@ -122,12 +136,13 @@ def main():
     print(hp.data.shape, hp.test.shape, hp.macro.shape)
 
     hp.preprocess()
-    hp.construct(StandardScaler(), PCA(), models['ridge']['model'])
-    param_grid = {
-        "pca__n_components": np.logspace(0, 2, 5, dtype=np.int64)
-    }
-    param_grid = {**param_grid, **models['ridge']['param_grid']}
-    hp.search(param_grid)
+    for model in models:
+        hp.construct(StandardScaler(), PCA(), models[model]['model'])
+        param_grid = {
+            # "pca__n_components": np.logspace(0, 2, 5, dtype=np.int64)
+        }
+        param_grid = {**param_grid, **models[model]['param_grid']}
+        hp.search(param_grid)
     # print(gscv)
     # results = {}
     # for model in models:
