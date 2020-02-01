@@ -10,7 +10,7 @@ class Pipeline:
     def setTarget(self, target):
         self.target_name = target
         self.target = self.data[target].copy()
-        self.Y = self.target
+        self.y = self.target
 
     def preprocess(self):
         pass
