@@ -16,6 +16,7 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import make_pipeline
 from sklearn.decomposition import PCA
+from sklearn.ensemble import VotingRegressor
 
 from utils.pipeline import Pipeline
 
@@ -92,9 +93,9 @@ class HousingPipeline(Pipeline):
             X_test = X[y.isna()]
             y_train = y[~y.isna()]
 
-            model = MLPRegressor()
+            model = DecisionTreeRegressor(min_samples_leaf=100)
             model.fit(X_train, y_train)
-            print("Feature: %s | Loss = " % feature, model.loss_)
+            print("Feature: %s | Loss = " % feature, 0)
             filled_gaps = model.predict(X_test)
             for i, ind in enumerate(data[feature][data[feature].isna()].index):
                 data.at[ind, feature] = filled_gaps[i]
@@ -128,11 +129,8 @@ class HousingPipeline(Pipeline):
             self.X, self.y, test_size=0.2, random_state=42)
 
         self.pipeline.fit(X_train, np.log1p(y_train))
-        return mean_squared_error(
-            self.pipeline.predict(X_test),
-            y_test,
-            squared=False
-        )
+        self.best_model = self.pipeline
+        return
 
     def search(self, param_grid, **kwargs):
         gscv = GridSearchCV(
@@ -171,9 +169,12 @@ def main():
     print(hp.data.shape, hp.test.shape, hp.macro.shape)
 
     hp.preprocess()
-    hp.construct(StandardScaler(), PCA(), ElasticNet())
-    hp.search({"elasticnet__alpha": np.logspace(-4, 1, 20)})
-
+    hp.construct(
+        StandardScaler(), PCA(),
+        DecisionTreeRegressor(max_depth=8, min_samples_leaf=112)
+    )
+    # hp.search({"elasticnet__alpha": np.logspace(-4, 1, 20)})
+    print(hp.train())
     # print(hp.train())
     # for model in models:
     #     hp.construct(StandardScaler(), PCA(), models[model]['model'])
@@ -183,15 +184,7 @@ def main():
     #     param_grid = {**param_grid, **models[model]['param_grid']}
     #     hp.search(param_grid)
     # print(gscv)
-    # results = {}
-    # for model in models:
-    #     print(model)
-    #     results[model] = hp.train(models[model])
     uploadToKaggle(hp.predict())
-    # # print(models)
-    # print(pd.DataFrame(
-    #     list(results.items()), columns=["model", "error"],
-    #     index=np.arange(len(results))))
 
 
 if __name__ == '__main__':
