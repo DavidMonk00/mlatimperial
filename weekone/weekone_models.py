@@ -4,6 +4,7 @@ from sklearn.ensemble import AdaBoostRegressor
 from numpy import array
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import GradientBoostingRegressor
 
 
 models = {'ridge': {'model': Ridge(alpha=1.0, copy_X=True, fit_intercept=True, max_iter=None,
@@ -20,6 +21,7 @@ models = {'ridge': {'model': Ridge(alpha=1.0, copy_X=True, fit_intercept=True, m
                          random_state=None, solver='auto', tol=0.001))],
            verbose=False),
   'best_score': -0.5426997451871067},
+  
  'lasso': {'model': Lasso(alpha=1.0, copy_X=True, fit_intercept=True, max_iter=1000,
         normalize=False, positive=False, precompute=False, random_state=None,
         selection='cyclic', tol=0.0001, warm_start=False),
@@ -36,6 +38,7 @@ models = {'ridge': {'model': Ridge(alpha=1.0, copy_X=True, fit_intercept=True, m
                          selection='cyclic', tol=0.0001, warm_start=False))],
            verbose=False),
   'best_score': -0.564975021601666},
+
  'elasticnet': {'model': ElasticNet(alpha=1.0, copy_X=True, fit_intercept=True, l1_ratio=0.5,
              max_iter=1000, normalize=False, positive=False, precompute=False,
              random_state=None, selection='cyclic', tol=0.0001, warm_start=False),
@@ -53,6 +56,7 @@ models = {'ridge': {'model': Ridge(alpha=1.0, copy_X=True, fit_intercept=True, m
                               warm_start=False))],
            verbose=False),
   'best_score': -0.5649830495941688},
+
  'decisiontreeregressor': {'model': DecisionTreeRegressor(ccp_alpha=0.0, criterion='mse', max_depth=None,
                         max_features=None, max_leaf_nodes=None,
                         min_impurity_decrease=0.0, min_impurity_split=None,
@@ -77,6 +81,7 @@ models = {'ridge': {'model': Ridge(alpha=1.0, copy_X=True, fit_intercept=True, m
                                          splitter='best'))],
            verbose=False),
   'best_score': -0.48952135424984833},
+
  'adaboostregressor': {'model': AdaBoostRegressor(base_estimator=DecisionTreeRegressor(ccp_alpha=0.0,
                                                          criterion='mse',
                                                          max_depth=3,
@@ -113,4 +118,26 @@ models = {'ridge': {'model': Ridge(alpha=1.0, copy_X=True, fit_intercept=True, m
                                      learning_rate=1.0, loss='linear',
                                      n_estimators=2, random_state=None))],
            verbose=False),
-  'best_score': -0.5081202139034571}}
+  'best_score': -0.5081202139034571},
+
+  'gradientboostingregressor': {
+    'model': GradientBoostingRegressor(),
+    'param_grid': {
+            'gradientboostingregressor__max_depth': np.linspace(10, 30, 10, dtype=int),
+            'gradientboostingregressor__min_samples_leaf': np.linspace(100, 200, 10, dtype=int),
+            'gradientboostingregressor__n_estimators': np.linspace(300,400, 10, dtype=int),
+            'gradientboostingregressor__learning_rate': np.linspace(0.01, 0.03, 10),
+        },
+    'best_estimator': GradientBoostingRegressor(alpha=0.9, ccp_alpha=0.0, criterion='friedman_mse',
+                                                init=None, learning_rate=0.018888888888888886,
+                                                loss='ls', max_depth=16, max_features=None,
+                                                max_leaf_nodes=None, min_impurity_decrease=0.0,
+                                                min_impurity_split=None, min_samples_leaf=188,
+                                                min_samples_split=2, min_weight_fraction_leaf=0.0,
+                                                n_estimators=400, n_iter_no_change=None,
+                                                presort='deprecated', random_state=None,
+                                                subsample=1.0, tol=0.0001, validation_fraction=0.1,
+                                                verbose=0, warm_start=False),
+    'best_score': -0.376131018315037
+  }
+}
