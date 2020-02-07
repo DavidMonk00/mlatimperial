@@ -40,13 +40,33 @@
         "params": {}
     },
     {
+        "type": "torch.nn.Conv2d",
+        "params": {
+          "in_channels": 64,
+          "out_channels": 128,
+          "kernel_size": 3,
+          "stride": 1,
+          "padding": 1
+        }
+    },
+    {
+        "type": "torch.nn.MaxPool2d",
+        "params": {
+            "kernel_size": 2
+        }
+    },
+    {
+        "type": "torch.nn.ReLU",
+        "params": {}
+    },
+    {
         "type": "Flatten",
         "params": {}
     },
     {
         "type": "torch.nn.Linear",
         "params": {
-            "in_features": 16384,
+            "in_features": 8192,
             "out_features": 1024
         }
     },

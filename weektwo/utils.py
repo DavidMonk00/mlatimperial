@@ -54,11 +54,6 @@ def save_data_in_chunks(data, chunk_size):
         print("Done:{}".format(index))
 
 
-class Flatten(nn.Module):
-    def forward(self, input):
-        return input.view(input.size(0), -1)
-
-
 def iterate_minibatches(X, y, batchsize, shuffle=False):
     indices = np.arange(len(X))
     if shuffle:
