@@ -56,12 +56,14 @@ class JetTagger:
 
     def initModel(self, config_file):
         self.device = torch.device("cuda", 0)
-        self.model = self._construct(json.load(open(config_file)))
+        config_dict = json.load(open(config_file))
+        self.model = self._construct(config_dict["model"])
         self.model.to(self.device)
         if (self.verbose):
             print(summary(self.model, (3, 64, 64)))
 
-        self.optimizer = torch.optim.AdamW(self.model.parameters())
+        self.optimizer = eval(config_dict["optimizer"]["type"])(
+            **config_dict["optimizer"]["params"])
 
     def saveModel(self, suffix="000"):
         with open(os.path.join(self.VOLS_PREFIX, "nn_snapshots", "best_%s.pt" % suffix), 'wb') as f:
@@ -108,8 +110,8 @@ class JetTagger:
 
             y_pred = np.asarray(y_pred)
             # Save the metrics values
-            val_acc = accuracy_score(self.y_val, self.y_pred > 0.5)
-            val_roc_auc = roc_auc_score(self.y_val, self.y_pred)
+            val_acc = accuracy_score(self.y_val, y_pred > 0.5)
+            val_roc_auc = roc_auc_score(self.y_val, y_pred)
             auc_history.append(val_roc_auc)
 
             if (self.verbose):
@@ -127,7 +129,7 @@ class JetTagger:
                 best_epoch = epoch
                 self.saveModel(suffix=suffix)
 
-    def predict(self, suffix="000", chunk_size=1000):
+    def predict(self, suffix="000", chunk_size=1000, verbose=False):
         test = h5py.File(os.path.join(VOLS_PREFIX, "kaggle_test.h5"), 'r')
         y_ans = []
         for index, step in enumerate(range(0, len(test['all_events']['histHCAL']), chunk_size)):
@@ -135,7 +137,8 @@ class JetTagger:
             y_ans.extend(self.model(torch.FloatTensor(X).to(self.device)).detach().cpu().numpy())
             del X
             gc.collect()
-            print("Done:{}".format(index))
+            if (verbose):
+                print("Done:{}".format(index))
 
         y_ans = np.array(y_ans)
         save_results('{}'.format("predictions_%s.csv" % suffix), y_ans)

@@ -40,7 +40,7 @@ def read_data(data, is_train=True, start_ind=0, end_ind=0):
     return hit_map, answers
 
 
-def save_data_in_chunks(data, chunk_size):
+def save_data_in_chunks(data, chunk_size, verbose=False):
     for index, step in enumerate(range(0, len(data['all_events']['histHCAL']), chunk_size)):
         X, y = read_data(data, True, step, step + chunk_size)
         X_train, X_val, y_train, y_val = train_test_split(
@@ -51,7 +51,8 @@ def save_data_in_chunks(data, chunk_size):
         np.save("y_val_{}".format(index), y_val)
         del X, y, X_train, X_val, y_train, y_val
         gc.collect()
-        print("Done:{}".format(index))
+        if (verbose):
+            print("Done:{}".format(index))
 
 
 def iterate_minibatches(X, y, batchsize, shuffle=False):

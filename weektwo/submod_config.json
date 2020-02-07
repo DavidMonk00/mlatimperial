@@ -1,56 +1,62 @@
-[
-    {
-        "type": "PConv2d",
-        "params": {
-            "in_channels": 3,
-            "out_channels": 32
+{
+    "model": [
+        {
+            "type": "PConv2d",
+            "params": {
+                "in_channels": 3,
+                "out_channels": 32
+            }
+        },
+        {
+            "type": "PConv2d",
+            "params": {
+                "in_channels": 32,
+                "out_channels": 64
+            }
+        },
+        {
+            "type": "ConvBN2d",
+            "params": {
+                "in_channels": 64,
+                "out_channels": 16,
+                "kernel_size": 1
+            }
+        },
+        {
+            "type": "torch.nn.AvgPool2d",
+            "params": {
+                "kernel_size": 4
+            }
+        },
+        {
+            "type": "Flatten",
+            "params": {}
+        },
+        {
+            "type": "torch.nn.Linear",
+            "params": {
+                "in_features": 4096,
+                "out_features": 1024
+            }
+        },
+        {
+            "type": "torch.nn.ReLU",
+            "params": {}
+        },
+        {
+            "type": "torch.nn.Linear",
+            "params": {
+                "in_features": 1024,
+                "out_features": 1
+            }
+        },
+        {
+            "type": "torch.nn.Sigmoid",
+            "params": {}
         }
-    },
-    {
-        "type": "PConv2d",
-        "params": {
-            "in_channels": 32,
-            "out_channels": 64
-        }
-    },
-    {
-        "type": "ConvBN2d",
-        "params": {
-            "in_channels": 64,
-            "out_channels": 16,
-            "kernel_size": 1
-        }
-    },
-    {
-        "type": "torch.nn.AvgPool2d",
-        "params": {
-            "kernel_size": 4
-        }
-    },
-    {
-        "type": "Flatten",
-        "params": {}
-    },
-    {
-        "type": "torch.nn.Linear",
-        "params": {
-            "in_features": 4096,
-            "out_features": 1024
-        }
-    },
-    {
-        "type": "torch.nn.ReLU",
-        "params": {}
-    },
-    {
-        "type": "torch.nn.Linear",
-        "params": {
-            "in_features": 1024,
-            "out_features": 1
-        }
-    },
-    {
-        "type": "torch.nn.Sigmoid",
+    ],
+    "optimizer": {
+        "type": "torch.optim.AdamW",
         "params": {}
     }
-]
+}
