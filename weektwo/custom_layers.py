@@ -43,7 +43,9 @@ class ConvBlock(nn.Module):
                 ConvBN2d(out_channels, out_channels, kernel_size=1, padding=0, stride=1),
             ))
 
-        self.conv = ConvBN2d(10*out_channels, out_channels, kernel_size=1, padding=0, stride=1)
+        self.conv_list.append(ConvBN2d(in_channels, out_channels, kernel_size=1, padding=0, stride=1))
+
+        self.conv = ConvBN2d(11*out_channels, out_channels, kernel_size=1, padding=0, stride=1)
 
     def forward(self, input):
         cat = torch.cat([conv(input) for conv in self.conv_list], dim=1)
