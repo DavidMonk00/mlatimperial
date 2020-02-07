@@ -29,4 +29,22 @@ class PConv2d(nn.Module):
             in_channels, out_channels, kernel_size=5, padding=2, stride=1)
 
     def forward(self, input):
-        return torch.add(self.conv_1(input), self.conv_2(input))
+        return F.relu(torch.add(self.conv_1(input), self.conv_2(input)), inplace=True)
+
+
+class ConvBlock(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(ConvBlock, self).__init__()
+        self.conv_list = torch.nn.ModuleList().cuda()
+        for i in range(10):
+            self.conv_list.append(torch.nn.Sequential(
+                ConvBN2d(in_channels, in_channels, kernel_size=1, padding=0, stride=1),
+                ConvBN2d(in_channels, out_channels, kernel_size=3, padding=1, stride=1),
+                ConvBN2d(out_channels, out_channels, kernel_size=1, padding=0, stride=1),
+            ))
+
+        self.conv = ConvBN2d(10*out_channels, out_channels, kernel_size=1, padding=0, stride=1)
+
+    def forward(self, input):
+        cat = torch.cat([conv(input) for conv in self.conv_list], dim=1)
+        return self.conv(cat)

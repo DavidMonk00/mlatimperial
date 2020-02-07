@@ -63,6 +63,7 @@ class JetTagger:
             print(summary(self.model, (3, 64, 64)))
 
         self.optimizer = eval(config_dict["optimizer"]["type"])(
+            self.model.parameters(),
             **config_dict["optimizer"]["params"])
 
     def saveModel(self, suffix="000"):
@@ -148,11 +149,12 @@ def main():
     # train = h5py.File(os.path.join(DATA_PREFIX, "kaggle_train.h5"), 'r')
     # save_data_in_chunks(train, 50000)
 
-    suffix="200"
+    suffix = "201"
+    num_epochs = int(sys.argv[1]) if len(sys.argv) > 1 else 2
 
     jt = JetTagger()
     jt.initModel("/home/hep/dm2614/projects/mlatimperial/submod_config.json")
-    jt.train(suffix=suffix)
+    jt.train(num_epochs=num_epochs, suffix=suffix)
     jt.predict(suffix=suffix)
 
 
