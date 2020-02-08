@@ -8,6 +8,7 @@ from sklearn.metrics import roc_auc_score
 import time
 import json
 from torchsummary import summary
+import torchvision
 
 from utils import read_data, iterate_minibatches
 from utils import save_results
@@ -48,6 +49,10 @@ class JetTagger:
             self.model.parameters(),
             **config_dict["optimizer"]["params"])
 
+        self.transform = torchvision.transforms.RandomErasing(
+            p=0.3, scale=(0.02, 0.33), ratio=(0.3, 3.3),
+            value=0, inplace=True)
+
     def saveModel(self, suffix="000"):
         with open(os.path.join(self.VOLS_PREFIX, "nn_snapshots", "best_%s.pt" % suffix), 'wb') as f:
             torch.save(self.model, f)
@@ -56,6 +61,8 @@ class JetTagger:
         auc_history = []
         best_score = 0
         best_epoch = 0
+
+
 
         for epoch in range(num_epochs):
             train_err = train_acc = 0
@@ -68,8 +75,13 @@ class JetTagger:
                 train_batches += np.ceil(len(X_train) / batch_size).astype(int)
                 self.model.train(True)
                 for X_batch, y_batch in iterate_minibatches(X_train, y_train, batch_size, shuffle=True):
+                    # X_batch = self.transform(X_batch)
                     X_batch = torch.FloatTensor(X_batch).to(self.device)
                     y_batch = torch.FloatTensor(y_batch).to(self.device)
+
+                    X_batch = torch.stack(
+                        [self.transform(img) for img in X_batch]
+                    )
 
                     y_predicted = self.model(X_batch)
                     loss = torch.nn.functional.binary_cross_entropy(y_predicted, y_batch).mean()

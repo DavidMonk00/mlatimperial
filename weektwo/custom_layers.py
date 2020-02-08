@@ -13,7 +13,8 @@ class ConvBN2d(nn.Module):
         super(ConvBN2d, self).__init__()
         self.model = torch.nn.Sequential(
             torch.nn.Conv2d(in_channels, out_channels, **kwargs),
-            torch.nn.BatchNorm2d(out_channels)
+            torch.nn.BatchNorm2d(out_channels),
+            torch.nn.Dropout(p=0.5)
         )
 
     def forward(self, input):
@@ -33,10 +34,10 @@ class PConv2d(nn.Module):
 
 
 class ConvBlock(nn.Module):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels, out_channels, num_blocks=10):
         super(ConvBlock, self).__init__()
         self.conv_list = torch.nn.ModuleList().cuda()
-        for i in range(10):
+        for i in range(num_blocks):
             self.conv_list.append(torch.nn.Sequential(
                 ConvBN2d(in_channels, in_channels, kernel_size=1, padding=0, stride=1),
                 ConvBN2d(in_channels, out_channels, kernel_size=3, padding=1, stride=1),
@@ -45,7 +46,7 @@ class ConvBlock(nn.Module):
 
         self.conv_list.append(ConvBN2d(in_channels, out_channels, kernel_size=1, padding=0, stride=1))
 
-        self.conv = ConvBN2d(11*out_channels, out_channels, kernel_size=1, padding=0, stride=1)
+        self.conv = ConvBN2d((num_blocks + 1)*out_channels, out_channels, kernel_size=1, padding=0, stride=1)
 
     def forward(self, input):
         cat = torch.cat([conv(input) for conv in self.conv_list], dim=1)

@@ -17,15 +17,17 @@ def main():
     # train = h5py.File(os.path.join(DATA_PREFIX, "kaggle_train.h5"), 'r')
     # save_data_in_chunks(train, 50000)
 
-    suffix = "203"
+    suffix = "206"
     num_epochs = int(sys.argv[1]) if len(sys.argv) > 1 else 2
+
+    batch_size = 128
 
     jt = JetTagger()
     jt.initModel("/home/hep/dm2614/projects/mlatimperial/submod_config.json")
     jt.train(
-        num_epochs=num_epochs, number_of_chunks=2, batch_size=128,
+        num_epochs=num_epochs, number_of_chunks=2, batch_size=batch_size,
         suffix=suffix)
-    jt.predict(suffix=suffix)
+    jt.predict(chunk_size=batch_size, suffix=suffix)
 
 
 if __name__ == '__main__':
