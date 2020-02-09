@@ -68,8 +68,6 @@ class JetTagger:
         """ Initialise the model.
 
         Function also defines the optimiser and transformer for the model.
-        # TODO: add hyperparameters for the optimiser and transformer to the
-        JSON configuration file.
 
         Parameters
         ----------
@@ -87,9 +85,9 @@ class JetTagger:
             self.model.parameters(),
             **config_dict["optimizer"]["params"])
 
-        self.transform = torchvision.transforms.RandomErasing(
-            p=0.3, scale=(0.02, 0.33), ratio=(0.3, 3.3),
-            value=0, inplace=True)
+        self.transform = eval(config_dict["transformer"]["type"])(
+            **config_dict["transformer"]["params"]
+        )
 
     def saveModel(self, suffix="000") -> None:
         """ Save trained model to file.

@@ -59,5 +59,15 @@
     "optimizer": {
         "type": "torch.optim.AdamW",
         "params": {}
+    },
+    "transformer": {
+        "type": "torchvision.transforms.RandomErasing",
+        "params": {
+            "p": 0.3,
+            "scale": [0.02, 0.33],
+            "ratio": [0.3, 3.3],
+            "value": 0,
+            "inplace": true
+        }
     }
 }
